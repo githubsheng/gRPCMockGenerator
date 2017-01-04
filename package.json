@@ -1,0 +1,10 @@
+{
+  "name": "gRPCMockGenerator",
+  "version": "1.0.0",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^6.0.56",
+    "protobufjs": "^6.4.0",
+    "grpc": "^1.0.0"
+  }
+}
