@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package itunes_appstore_project;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesappstoreproject";
+
+
+service SourceService {
+    rpc GetSource (GetSource.Request) returns (GetSource.Response);
+}
+
+message GetSource {
+    message Request {
+        string project_id = 1;
+        string source_id = 2;
+    }
+
+    message Response {
+        Source source = 1;
+    }
+
+    message Source {
+        string id = 1;
+        int64 language_id = 2;
+        google.protobuf.Timestamp last_imported_at = 3;
+        int64 version = 4;
+        SourceMetaData meta_data = 5;
+        SourceIngredient keyword = 6;
+        repeated SourceIAPProduct iaps = 7;
+    }
+
+    message SourceIngredient {
+        string id = 1;
+        int64 language_id = 2;
+        int64 version = 3;
+        string string = 4;
+        int32 word_count = 5;
+    }
+
+    message SourceMetaData {
+        SourceIngredient app_name = 1;
+        SourceIngredient description = 2;
+        SourceIngredient whats_new = 3;
+    }
+
+
+    message SourceIAPProduct {
+        string product_id = 1;
+        SourceIngredient display_name = 2;
+        SourceIngredient description = 3;
+    }
+}

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package itunes_appstore_project;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesappstoreproject";
+
+
+service TranslationService {
+    rpc GetTranslation (GetTranslation.Request) returns (GetTranslation.Response);
+}
+
+
+message GetTranslation {
+    message Request {
+        string project_id = 1;
+        string translation_id = 2;
+    }
+
+    message Response {
+        Translation translation = 1;
+    }
+
+    message Translation {
+        string id = 1;
+        int64 language_id = 2;
+        google.protobuf.Timestamp last_imported_at = 3;
+        int64 version = 4;
+        TranslationMetaData meta_data = 5;
+        TranslationIngredient keyword = 6;
+        repeated TranslationIAPProduct iaps = 7;
+    }
+
+    message TranslationIngredient {
+        string id = 1;
+        int64 language_id = 2;
+        int64 version = 3;
+        string reference_tu_ingredient_id = 4;
+        int64 reference_language_id = 5;
+        int64 reference_tu_ingredient_version = 6;
+        string string = 7;
+        int32 word_count = 8;
+    }
+
+    message TranslationMetaData {
+        TranslationIngredient app_name = 1;
+        TranslationIngredient description = 2;
+        TranslationIngredient whats_new = 3;
+    }
+
+    message TranslationIAPProduct {
+        string product_id = 1;
+        TranslationIngredient display_name = 2;
+        TranslationIngredient description = 3;
+    }
+
+}

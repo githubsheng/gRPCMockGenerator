@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package itunes_appstore_project;
+option java_package = "com.oneskyapp.itunesappstoreproject";
+
+service KeywordsService {
+    rpc GetKeywordsByProjectId (GetKeywordsByProjectId.Request) returns (GetKeywordsByProjectId.Response);
+    rpc UpdateKeywordsSelection (UpdateKeywordsSelection.Request) returns (UpdateKeywordsSelection.Response);
+}
+
+message Keyword {
+    int64 language_id = 1;
+    string all = 2; // keyword pool (a string separate keywords with comma)
+    string selected = 3; // selected keyword  (a string separate keywords with comma)
+}
+
+message GetKeywordsByProjectId {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+    }
+    message Response {
+        string project_id = 1;
+        repeated Keyword keywords = 2;
+    }
+}
+
+message UpdateKeywordsSelection {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+        repeated Keyword keywords = 4;
+    }
+    message Response {
+        string project_id = 1;
+    }
+}

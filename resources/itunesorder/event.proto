@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package itunes_order_order;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesorder";
+
+message SourceSnapshotCreated {
+    google.protobuf.Timestamp occurred_on = 1;
+    string project_id = 2;
+    string source_snapshot_id = 3;
+    int64 source_language_id = 4;
+}
+
+message TranslationSnapshotCreated {
+    google.protobuf.Timestamp occurred_on = 1;
+    string project_id = 2;
+    string translation_snapshot_id = 3;
+    int64 translation_language_id = 4;
+}
+
+message QuotationApproved {
+    google.protobuf.Timestamp occurred_on = 1;
+    string quotation_id = 2;
+}
+
+message TranslationSnapshotsDeleted {//correspond to public project language removed event
+    string project_id = 2;
+    int64 translation_language_id = 4;
+    google.protobuf.Timestamp occurred_on = 1;
+}

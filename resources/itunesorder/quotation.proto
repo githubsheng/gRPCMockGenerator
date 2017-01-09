@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package itunes_order_quotation;
+
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesorder";
+
+service QuotationService {
+    rpc GetQuotationInfo (GetQuotationInfo.Request) returns (GetQuotationInfo.Response);
+    rpc GetSpecializations (GetSpecializations.Request) returns (GetSpecializations.Response);
+    rpc CreateQuotation (CreateQuotation.Request) returns (CreateQuotation.Response);
+    rpc GetQuotationItemTranslatableContent (GetQuotationItemTranslatableContent.Request) returns (GetQuotationItemTranslatableContent.Response);
+    rpc GetApprovedQuotation (GetApprovedQuotation.Request) returns (GetApprovedQuotation.Response);
+    rpc ApproveQuotation (ApproveQuotation.Request) returns (ApproveQuotation.Response);
+}
+
+
+enum Error {
+    UNKNOWN_ERROR = 0;
+    MAKE_QUOTATION_OERDER_READY_ERROR = 1;
+    QUOTATION_NOT_FOUND_ERROR = 2;
+    QUOTATION_ALREADY_USED_ERROR = 3;
+}
+
+enum TranslationServiceType {
+    TRANSLATION = 0;
+    TRANSLATION_AND_REVIEW = 1;
+}
+
+enum TranslatableContentType {
+    ALL = 0;
+    NOT_YET_TRANSLATED = 1;
+}
+
+message Specialization {
+    string code = 1;
+    string description = 2;
+}
+
+message QuotationInfo {
+    string project_id = 1;
+    repeated string from_language_ids = 2;
+    repeated string to_language_ids = 3;
+}
+
+message Quotation {
+    string id = 1;
+    string from_language_id = 2;
+    repeated QuotationItem items = 3;
+    repeated string available_to_language_ids = 4;
+}
+
+message QuotationItem {
+    string to_language_id = 1;
+    Pricing pricing = 2;
+    int32 word_count = 3;
+    google.protobuf.Timestamp delivery_date = 4;
+}
+message Pricing {
+    TranslationServiceType service_type = 1;
+    double value = 2;
+}
+
+message ToLanguage {
+    string language_id = 1;
+    TranslationServiceType service_type = 2;
+}
+
+message TranslatableString {
+    string value = 1;
+}
+
+message GetQuotationInfo {
+    message Request {
+        string project_id = 1;
+        string user_id = 2;
+    }
+    message Response {
+        QuotationInfo quotation_info = 1;
+    }
+}
+
+message GetSpecializations {
+
+    message Request {
+    }
+    message Response {
+        repeated Specialization specializations = 1;
+    }
+}
+message CreateQuotation {
+
+    message Request {
+        string project_id = 1;
+        string user_id = 2;
+        string organization_id = 3;
+        string specialization_code = 4;
+        TranslatableContentType translatable_content_type = 5;
+        string from_language_id = 6;
+        repeated ToLanguage to_languages = 7;
+    }
+
+    message Response {
+        Quotation quotation = 1;
+    }
+}
+
+message TranslatableContent {
+    TranslatableString app_name = 1;
+    TranslatableString description = 2;
+    TranslatableString whats_new = 3;
+    TranslatableString keyword = 4;
+    repeated IAPProduct iap_products = 8;
+
+    message IAPProduct {
+        string product_id = 1;
+        TranslatableString display_name = 2;
+        TranslatableString description = 3;
+    }
+}
+
+
+message GetQuotationItemTranslatableContent {
+    message Request {
+        string quotation_id = 1;
+        string to_language_id = 2;
+    }
+
+    message Response {
+        string quotation_id = 1;
+        string to_language_id = 2;
+        TranslatableContent translatable_content = 3;
+    }
+}
+
+message GetApprovedQuotation {
+    message Request {
+        string quotation_id = 1;
+        string organization_id = 2;
+    }
+
+    message Response {
+        oneof result {
+            Quotation quotation = 1;
+            Error error = 2;
+        }
+    }
+}
+
+message ApproveQuotation {
+    message Request {
+        string quotation_id = 1;
+        string organization_id = 2;
+        string creator_user_id = 3;
+        string note_to_translator = 4;
+    }
+    message Response {
+        oneof result {
+            string quotation_id = 1;
+            Error error = 2;
+        }
+    }
+}

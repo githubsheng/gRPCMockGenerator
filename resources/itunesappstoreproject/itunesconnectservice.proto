@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package itunes_connect;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesconnect";
+
+service ItunesConnectService {
+    rpc Connect (Connect.Request) returns (Connect.Response); // TODO: rename: connect account with iTunesConnect
+    rpc ListApps (ListApps.Request) returns (ListApps.Response);
+    rpc AppDetail (AppDetail.Request) returns (AppDetail.Response);
+
+    // connected
+    rpc FetchVersions (FetchVersions.Request) returns (FetchVersions.Response);
+    rpc UpdateProjectSource (UpdateProjectSourceFromItunesConnect.Request) returns (UpdateProjectSourceFromItunesConnect.Response);
+    rpc UpdateProjectTranslations (UpdateProjectTranslations.Request) returns (UpdateProjectTranslations.Response);
+    rpc StartExportToItc (StartExportToItc.Request) returns (StartExportToItc.Response);
+}
+
+enum Error {
+    NONE = 0;
+    WRONG_CREDENTIAL = 1;
+    OTHERS = 999;
+}
+
+message Connect {
+    message Request {
+        string apple_id = 1;
+        string password = 2;
+    }
+    message Response {
+        string credential_token = 1;
+    }
+}
+
+message ListApps {
+    message Request {
+        string credential_token = 1;
+    }
+    message Result {
+        string app_id = 1;
+        string app_name = 2;
+        string icon_url = 3;
+        string content_provider_id = 4;
+    }
+    message Response {
+        repeated Result results = 1;
+        Error error = 2;
+    }
+}
+
+message IAP_Product {
+    string product_id = 1;
+    string display_name = 2;
+    string description = 3;
+}
+message AppDetailData {
+    string locale = 1;
+    string app_id = 2;
+    string app_name = 3;
+    string description = 4;
+    string whats_new = 9;
+    string icon_url = 5;
+    string keyword = 6;
+    string version_number = 7;
+    int64 primary_language_id = 10;
+    repeated int64 language_ids = 11;
+    repeated IAP_Product iap_list = 8;
+}
+
+message AppDetail {
+    message Request {
+        string credential_token = 1;
+        string content_provider_id = 2;
+        string app_id = 3;
+    }
+    message Response {
+        AppDetailData result = 1;
+    }
+}
+
+message UpdateProjectSourceFromItunesConnect {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+        string app_id = 4;
+        string app_store_url = 5;
+        string icon_url = 6;
+        string version = 7;
+        string app_name = 8;
+        string description = 9;
+        string whats_new = 10;
+        string keyword = 11;
+        repeated IAP_Product iap_list = 12;
+        repeated string target_language_ids = 13;
+    }
+    message Response {
+        Result result = 1;
+    }
+
+    message Result {
+        string project_id = 1;
+    }
+}
+
+message UpdateProjectTranslations {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+        repeated string target_language_ids = 4;
+    }
+
+    message Response {
+        Result result = 1;
+    }
+
+    message Result {
+        string project_id = 1;
+    }
+}
+
+message FetchVersions {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+    }
+
+    message Response {
+        Result result = 1;
+    }
+
+    message Result {
+        string live_version = 1;
+        string deliverable_version = 2;
+        string inflight_version = 3;
+    }
+}
+
+message StartExportToItc {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string export_user_id = 3;
+        string custom_version_number = 5;
+        repeated int64 export_language_ids = 4;
+    }
+
+    message Result {
+        google.protobuf.Timestamp start_export_at = 1;
+    }
+
+    message Response {
+        Result result = 1;
+    }
+}
+

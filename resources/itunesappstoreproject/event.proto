@@ -1,0 +1,179 @@
+syntax = "proto3";
+
+package itunes_appstore_project;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesappstoreproject.publicproject";
+
+message PublicProjectCreated {
+    string project_id = 1;
+    int64 source_language_id = 2;
+    repeated int64 target_language_ids = 3;
+    string app_name = 4;
+    string description = 5;
+    string whats_new = 6;
+    string credential_id = 7;
+    string organization_id = 8;
+}
+
+message SourceCreated {
+    message Translation {
+        string id = 1;
+        string string = 2;
+    }
+    string project_id = 1;
+    repeated string translation_ids = 2;
+    int32 total_word_count = 3;
+    int64 source_language_id = 4;
+    repeated int64 target_language_ids = 5;
+    Translation app_name = 6;
+    Translation description = 7;
+    Translation whats_new = 8;
+    string source_id = 9;
+}
+
+message PublicProjectLanguagesAdded {
+    string project_id = 1;
+    repeated int64 language_ids = 2;
+}
+
+message PublicProjectOrderConfirmed {
+    string order_id = 1;
+    string quotation_id = 2;
+}
+
+message PublicProjectNameUpdated {
+    string project_id = 1;
+    string original_project_name = 2;
+    string updated_project_name = 3;
+}
+
+message PublicProjectDeleted {
+    string project_id = 1;
+}
+
+message PublicProjectSourceUpdated {
+    message Translation {
+        string id = 1;
+        string string = 2;
+    }
+    string project_id = 1;
+    int64 source_language_id = 2;
+    Translation app_name = 4;
+    Translation description = 5;
+    Translation whats_new = 6;
+    google.protobuf.Timestamp imported_at = 7;
+    string source_id = 8;
+}
+
+message AppStoreMetaDataUpdated {
+    string project_id = 1;
+    string app_store_url = 2;
+    string icon_url = 3;
+    string version = 4;
+}
+
+message ProjectNotesLeft {
+    string project_id = 1;
+    string app_name_note = 2;
+    string description_note = 3;
+    string whats_new_note = 4;
+    string keyword_note = 5;
+    repeated IAPNote iaps_note = 6;
+
+    message IAPNote {
+        string product_id = 1;
+        string display_name = 2;
+        string description = 3;
+    }
+}
+
+message OrderItemDelivered {
+    string order_id = 1;
+    int64 to_language_id = 2;
+    string project_id = 3;
+}
+
+message ProjectLanguagesRemoved {
+    google.protobuf.Timestamp occurred_on = 1;
+    string project_id = 2;
+    string user_id = 3;
+    repeated int64 deleted_language_ids = 4;
+}
+
+message PublicProjectBackupFinished {
+    string backup_id = 1;
+    string project_id = 2;
+    google.protobuf.Timestamp backup_at = 3;
+}
+
+message PublicProjectItunesConnectConnected {
+    string project_id = 1;
+    string credential_id = 2;
+}
+
+message ItunesConnectProjectDisconnected {
+    string project_id = 1;
+}
+
+message TranslationCreated {
+    string Translation_id = 1;
+    int64 language_id = 2;
+    google.protobuf.Timestamp last_updated_at = 3;
+    string project_id = 4;
+}
+
+message HotFixReimportTranslations {
+    string project_id = 1;
+    int64 source_language_id = 2;
+    repeated int64 language_ids = 3;
+}
+
+message ItunesProjectExportStarted {
+    string project_id = 1;
+    string export_user_id = 2;
+    string organization_id = 3;
+    string custom_version_number = 5;
+    repeated int64 export_language_ids = 4;
+}
+
+message ItunesProjectExported {
+    string project_id = 1;
+    string project_name = 6;
+    string export_user_id = 2;
+    string organization_id = 3;
+    repeated int64 export_language_ids = 4;
+    google.protobuf.Timestamp exported_at = 5;
+}
+
+message ItunesProjectExportFailed {
+    string project_id = 1;
+    string project_name = 7;
+    string export_user_id = 2;
+    string organization_id = 3;
+    repeated int64 export_language_ids = 4;
+    repeated string errors = 5;
+    google.protobuf.Timestamp exported_at = 6;
+}
+
+message TranslationReimported {
+    string Translation_id = 1;
+    int64 language_id = 2;
+    google.protobuf.Timestamp last_updated_at = 3;
+    string project_id = 4;
+}
+
+message KeywordPoolSelectionUpdated {
+    string id = 1;
+    string project_id = 2;
+    string translation_id = 3;
+    int64 language_id = 4;
+    string selected_keyword_string = 5;
+}
+
+message KeywordPoolImported {
+    string id = 1;
+    string project_id = 2;
+    string translation_id = 3;
+    int64 language_id = 4;
+    string keyword_string = 5;
+}

@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+package itunes_order_order;
+
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesorder";
+
+service OrderService {
+    rpc PlaceOrder (PlaceOrder.Request) returns (PlaceOrder.Response);
+    rpc GetOrders (GetOrders.Request) returns (GetOrders.Response);
+    rpc GetOrdersStatusByProjectId (GetOrdersStatusByProjectId.Request) returns (GetOrdersStatusByProjectId.Response);
+    rpc GetDeliveredTranslations (GetDeliveredTranslations.Request) returns (GetDeliveredTranslations.Response);
+    rpc GetTranslations (GetTranslations.Request) returns (GetTranslations.Response);
+    rpc GetOrderForCommunication (GetOrderForCommunication.Request) returns (GetOrderForCommunication.Response);
+
+    // TODO: move to itunes
+    rpc GetProjectOrdersByOrganizationId (GetProjectOrdersByOrganizationId.Request) returns (GetProjectOrdersByOrganizationId.Response);
+}
+
+enum Error {
+    UNKNOWN_ERROR = 0;
+    QUOTATION_NOT_FOUND_ERROR = 1;
+    QUOTATION_ALREADY_USED_ERROR = 2;
+    ORDER_NOT_EXISTS = 3;
+}
+
+
+message TranslatableContent {
+    string id = 1; //TODO: verify if this is necessary
+    string string = 2;
+}
+
+message TranslatableIAPContent {
+    string product_id = 1;
+    TranslatableContent display_name = 2;
+    TranslatableContent description = 3;
+}
+
+message TranslatedContent {
+    string string = 1;
+}
+
+message TranslatedIAPContent {
+    string product_id = 1;
+    TranslatedContent display_name = 2;
+    TranslatedContent description = 3;
+}
+
+message TranslationUnit {
+    TranslatableContent source = 1;
+    TranslatedContent translation = 2;
+}
+
+message IAPTranslationUnit {
+    string product_id = 1;
+    TranslationUnit display_name = 2;
+    TranslationUnit description = 3;
+}
+
+message Sources {
+    TranslatableContent app_name = 1;
+    TranslatableContent description = 2;
+    TranslatableContent whats_new = 3;
+    TranslatableContent keyword = 4;
+    repeated TranslatableIAPContent iaps = 5;
+}
+
+message Translations {
+    TranslatedContent app_name = 1;
+    TranslatedContent description = 2;
+    TranslatedContent whats_new = 3;
+    TranslatedContent keyword = 4;
+    repeated TranslatedIAPContent iaps = 5;
+}
+
+message PlaceOrder {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string quotation_id = 3;
+        string payment_token = 4;
+    }
+    message Response {
+        oneof result {
+            string order_id = 1;
+            Error error = 2;
+        }
+    }
+}
+
+message GetOrders {
+    message Request {
+        repeated string order_ids = 1;
+    }
+    message OrderItem {
+        int64 to_language_id = 1;
+        int32 status = 2;
+        int32 word_count = 3;
+        google.protobuf.Timestamp delivery_date = 4;
+        string order_item_id = 5;
+    }
+    message Order {
+        string order_id = 1;
+        int64 from_language_id = 2;
+        string paid_total = 3;
+        int32 status = 4;
+        google.protobuf.Timestamp creation_date = 5;
+        repeated OrderItem items = 6;
+        string project_id = 7;
+        string project_name = 8;
+    }
+    message Response {
+        repeated Order orders = 1;
+    }
+}
+
+message GetProjectOrdersByOrganizationId {
+    message Request {
+        string organization_id = 1;
+    }
+    message Order {
+        string order_id = 1;
+        string project_id = 2;
+    }
+    message Response {
+        repeated Order result = 1;
+    }
+}
+
+message GetTranslations {
+    message Request {
+        string order_id = 1;
+        string organization_id = 2;
+        int64 to_language_id = 3;
+    }
+    message Response {
+        Sources sources = 1;
+        Translations translations = 2;
+    }
+}
+
+message GetDeliveredTranslations {
+    message TranslatableContent {
+        string id = 1;
+        int64 language_id = 2;
+        int64 version = 3;
+        string string = 4;
+    }
+    message TranslationPair {
+        TranslatableContent ref = 1;
+        string translation_string = 2;
+    }
+    message TranslatedIAPContent {
+        string product_id = 1;
+        TranslationPair display_name = 2;
+        TranslationPair description = 3;
+    }
+    message Translations {
+        TranslationPair app_name = 1;
+        TranslationPair description = 2;
+        TranslationPair whats_new = 3;
+        TranslationPair keyword = 4;
+        repeated TranslatedIAPContent iaps = 5;
+    }
+    message Request {
+        string order_id = 1;
+        string organization_id = 2;
+        int64 to_language_id = 3;
+    }
+    message Response {
+        Translations translations = 1;
+    }
+}
+
+message GetOrdersStatusByProjectId {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+    }
+    message Response {
+        repeated OrderStatus ordersStatus = 1;
+    }
+    message OrderStatus {
+        string id = 1;
+        int32 status = 2;
+    }
+}
+
+message GetOrderForCommunication {
+    message Request {
+        string order_id = 1;
+    }
+    message Response {
+        oneof result {
+            Order order = 1;
+            Error error = 2;
+        }
+    }
+    message Order {
+        string order_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+        repeated string order_item_ids = 4;
+        string first_message_to_translator = 5;
+    }
+}
+

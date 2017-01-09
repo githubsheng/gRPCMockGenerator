@@ -1,0 +1,531 @@
+syntax = "proto3";
+
+package itunes_appstore_project;
+import "../../protobuf_default_types/google/protobuf/timestamp.proto";
+option java_package = "com.oneskyapp.itunesappstoreproject";
+
+//TODO: rename to iTunesAppStoreService
+service iTunesSearchService {
+    rpc SearchApp (SearchRequest) returns (SearchResponse);
+    rpc LookupApp (LookupApp.Request) returns (LookupApp.Response);
+    rpc UpdateProjectSource (UpdateProjectSourceFromAppStore.Request) returns (UpdateProjectSourceFromAppStore.Response);
+}
+
+service ProjectService {
+    rpc CreatePublicProject (CreatePublicProject.Request) returns (CreatePublicProject.Response);
+    rpc CreateITCProject (CreateITCProject.Request) returns (CreateITCProject.Response);
+    rpc GetProjectsByOrganizationId (GetProjectsByOrganizationId.Request) returns (GetProjectsByOrganizationId.Response);
+    rpc GetProjectByProjectId (GetProjectByProjectId.Request) returns (GetProjectByProjectId.Response);
+    rpc GetTranslationOverview (GetTranslationOverview.Request) returns (GetTranslationOverview.Response);
+    rpc GetLanguageTranslation (GetLanguageTranslation.Request) returns (GetLanguageTranslation.Response);
+    rpc GetProjectsSummaryByOrganizationId (GetProjectsSummaryByOrganizationId.Request) returns (GetProjectsSummaryByOrganizationId.Response);
+    rpc GetProjectSummary (GetProjectSummary.Request) returns (GetProjectSummary.Response);
+    rpc GetProjectSourceByProjectId (GetProjectSourceByProjectId.Request) returns (GetProjectSourceByProjectId.Response);
+    rpc UpdateProjectName (UpdateProjectName.Request) returns (UpdateProjectName.Response);
+    rpc DeleteProject (DeleteProject.Request) returns (DeleteProject.Response);
+    rpc GetProjectStatusByProjectId (GetProjectStatusByProjectId.Request) returns (GetProjectStatusByProjectId.Response);
+    rpc GetTranslationFileUrl (GetTranslationFileUrl.Request) returns (GetTranslationFileUrl.Response);
+    rpc AddLanguages (AddLanguages.Request) returns (AddLanguages.Response);
+    rpc RemoveLanguages (RemoveLanguages.Request) returns (RemoveLanguages.Response);
+    rpc BackupProject (BackupProject.Request) returns (BackupProject.Response);
+    rpc GetBackupRecordsByProject (GetBackupRecordsByProject.Request) returns (GetBackupRecordsByProject.Response);
+    rpc ConnectItunesConnect(ConnectItunesConnect.Request) returns (ConnectItunesConnect.Response);
+    rpc DisconnectItunesConnect(DisconnectItunesConnect.Request) returns (DisconnectItunesConnect.Response);
+
+    // Project notes
+    rpc LeaveNotes (LeaveNotes.Request) returns (LeaveNotes.Response);
+    rpc GetNotesForOrder (GetNotesForOrder.Request) returns (GetNotesForOrder.Response);
+}
+
+message AppInfo {
+    string id = 1;
+    string name = 2;
+    string icon_url = 3;
+    string description = 4;
+    string version = 5;
+    string whats_new = 6;
+    string store_url = 7;
+}
+
+message Project {
+    string id = 1;
+    string name = 2;
+}
+
+message SearchRequest {
+    string query = 1;
+}
+
+message SearchResponse {
+    repeated AppInfo apps = 1;
+}
+
+message ProjectSummary {
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    repeated int64 from_language_ids = 4;
+    repeated int64 to_language_ids = 5;
+    repeated Order orders = 6;
+
+    message Order {
+        string order_id = 1;
+        int32 status = 2;
+    }
+}
+
+message LookupApp {
+    message Request {
+        string url = 1;
+    }
+    message Response {
+        AppInfo app = 1;
+    }
+}
+
+message UpdateProjectSourceFromAppStore {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+        string app_id = 4;
+        string app_store_url = 5;
+        string icon_url = 6;
+        string version = 7;
+        string app_name = 8;
+        string description = 9;
+        string whats_new = 10;
+    }
+    message Response {
+        Result result = 1;
+    }
+
+    message Result {
+        string project_id = 1;
+    }
+}
+
+
+message CreatePublicProject {
+    message Request {
+        string organization_id = 1;
+        string creatorUser_id = 2;
+        string app_id = 3;
+        string app_name = 4;
+        string app_store_Url = 5;
+        string source_language_id = 6;
+        repeated string target_language_ids = 7;
+        string icon_url = 8;
+        string description = 9;
+        string version = 10;
+        string whats_new = 11;
+    }
+    message Response {
+        string project_id = 1;
+    }
+}
+
+message CreateITCProject {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string app_id = 3;
+        string icon_url = 4;
+        string version = 5;
+        string app_name = 6;
+        string description = 7;
+        string whats_new = 8;
+        string keyword = 9;
+        repeated InAppPurchase iaps = 10;
+        string source_language_id = 11;
+        repeated string target_language_ids = 12;
+        string credential_token = 13;
+        string content_provider_id = 14;
+    }
+    message Response {
+        oneof result {
+            string project_id = 1;
+            Error error = 2;
+        }
+    }
+}
+
+message InAppPurchase {
+    string product_id = 1;
+    string display_name = 2;
+    string description = 3;
+}
+
+message GetProjectsByOrganizationId {
+    message Request {
+        string organization_id = 1;
+    }
+    message Response {
+        repeated Project projects = 1;
+    }
+}
+
+enum ServiceType {
+    TRANSLATION = 0;
+    TRANSLATION_AND_REVIEW = 1;
+}
+
+message GetProjectOrdersByOrganizationId {
+    message Request {
+        string organization_id = 1;
+    }
+    message Order {
+        string order_id = 1;
+        string project_id = 2;
+        string project_name = 3;
+    }
+    message Response {
+        repeated Order result = 1;
+    }
+}
+
+message GetTranslations {
+    message Request {
+        string order_id = 1;
+        string organization_id = 2;
+        int64 to_language_id = 3;
+    }
+    message Response {
+        Translations source = 1;
+        Translations translation = 2;
+    }
+    message Translations {
+        string app_name = 1;
+        string description = 2;
+        string whats_new = 3;
+    }
+}
+
+message GetProjectByProjectId {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+    }
+    message Response {
+        ProjectInfo project_info = 1;
+    }
+}
+
+message ItunesConnectInfo {
+    string apple_id = 1;
+    string content_provider_id = 2;
+    string credential_token = 3;
+}
+
+message ProjectInfo {
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    repeated string to_language_ids = 4;
+    string app_id = 5;
+    string app_store_icon_url = 6;
+    string app_store_url = 7;
+    ItunesConnectInfo itunesConnectInfo = 8;
+}
+
+message GetTranslationOverview {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+    }
+    message Response {
+        repeated TranslationOverview translation_overview = 1;
+    }
+    message TranslationOverview {
+        int64 language_id = 1;
+        int32 word_count = 2;
+        int32 translated_count = 3;
+        int32 outdated_count = 4;
+        int32 in_progress_order_count = 5;
+        google.protobuf.Timestamp lastImportedAt = 6;
+    }
+}
+
+message GetLanguageTranslation {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+        int64 language_id = 4;
+    }
+    message Response {
+        TranslationDetails translation_details = 1;
+    }
+    message TranslationDetails {
+        int32 translatedCount = 1;
+        int32 wordCount = 2;
+        google.protobuf.Timestamp lastImportedAt = 3;
+        repeated int64 from_language_ids = 4;
+        Translations translations = 5;
+    }
+    message Translations {
+        Translation appName = 1;
+        Translation description = 2;
+        Translation whatsNew = 3;
+        Translation keyword = 4;
+        repeated TranslationIap iaps = 5;
+    }
+    message Translation {
+        string source = 1;
+        string translation = 2;
+        bool isOutdated = 3;
+    }
+    message TranslationIap {
+        string productId = 1;
+        Translation displayName = 2;
+        Translation description = 3;
+    }
+}
+
+message GetProjectsSummaryByOrganizationId {
+    message Request {
+        string organization_id = 1;
+    }
+    message Response {
+        repeated ProjectSummary projects = 1;
+    }
+}
+
+message GetProjectSummary {
+    message Request {
+        string project_id = 1;
+    }
+    message Response {
+        ProjectSummary project = 1;
+    }
+}
+
+message GetProjectSourceByProjectId {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+    }
+    message Response {
+        ProjectSource project_source = 1;
+    }
+    message ProjectSource {
+        string project_id = 1;
+        google.protobuf.Timestamp imported_at = 2;
+        Source name = 3;
+        Source description = 4;
+        Source whatsnew = 5;
+        Source keyword = 6;
+        repeated IAP iaps = 7;
+    }
+    message IAP {
+        string product_id = 1;
+        Source display_name = 2;
+        Source description = 3;
+    }
+    message Source {
+        string source = 1;
+        string notes = 2;
+    }
+}
+
+message UpdateProjectName {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+        string project_name = 4;
+    }
+    message Response {
+        string project_id = 1;
+    }
+}
+
+message DeleteProject {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+    }
+    message Response {
+        string project_id = 1;
+    }
+}
+
+message GetProjectStatusByProjectId {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+    }
+    message Response {
+        Result result = 1;
+    }
+    message Result {
+        bool hasOrderInProgress = 1;
+    }
+}
+
+message LeaveNotes {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+        ProjectNotes notes = 4;
+    }
+    message Response {
+        oneof result {
+            string project_id = 1;
+            Error error = 2;
+        }
+    }
+}
+
+message GetTranslationFileUrl {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+    }
+    message Response {
+        Result result = 1;
+    }
+    message Result {
+        string file_url = 1;
+    }
+}
+
+message AddLanguages {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+        repeated int64 language_ids = 4;
+    }
+    message Response {
+        Result result = 1;
+    }
+    message Result {
+        repeated int64 language_ids = 1;
+    }
+}
+
+message RemoveLanguages {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+        repeated int64 language_ids = 4;
+    }
+    message Response {
+        Result result = 1;
+    }
+    message Result {
+        repeated int64 language_ids = 1;
+    }
+}
+
+message BackupProject {
+    message Request {
+        string organization_id = 1;
+        string user_id = 2;
+        string project_id = 3;
+    }
+    message Response {
+        Result result = 1;
+    }
+    message Result {
+        string backup_id = 1;
+        string project_id = 2;
+        string version = 3;
+        repeated int64 language_ids = 4;
+        string file_url = 5;
+        google.protobuf.Timestamp created_at = 6;
+    }
+}
+
+enum Error {
+    PROJECT_NOT_EXISTS = 0;
+    CREDENTIAL_NOT_EXISTS = 1;
+}
+
+message GetBackupRecordsByProject {
+    message Request {
+        string project_id = 1;
+        string organization_id = 2;
+        string user_id = 3;
+    }
+
+    message Response {
+        oneof result {
+            BackUpRecords back_up_records = 1;
+            Error error = 2;
+        }
+    }
+    message BackUpRecords {
+        repeated BackUpRecord records = 1;
+    }
+    message BackUpRecord {
+        string backup_id = 1;
+        google.protobuf.Timestamp created_at = 2;
+        string version = 3;
+        repeated int64 language_ids = 4;
+        string fileUrl = 5;
+    }
+}
+
+message ConnectItunesConnect {
+    message Request {
+        string project_id = 1;
+        string apple_id = 2;
+        string password = 3;
+    }
+
+    message Response {
+        string credential_token = 1;
+        string project_id = 2;
+        string content_provider_id = 3;
+        int64 error_code = 4;
+    }
+
+}
+
+message DisconnectItunesConnect {
+    message Request {
+        string project_id = 1;
+    }
+
+    message Response {
+        string project_id = 1;
+    }
+}
+
+message ProjectNotes {
+    message IAP {
+        string product_id = 1;
+        string display_name = 2;
+        string description = 3;
+    }
+
+    string name = 1;
+    string description = 2;
+    string whats_new = 3;
+    string keyword = 4;
+    repeated IAP iaps = 5;
+}
+
+message GetNotesForOrder {
+    message Request {
+        string project_id = 1;
+    }
+    message Response {
+        oneof result {
+            Data data = 1;
+            Error error = 2;
+        }
+    }
+    message Data {
+        string project_id = 1;
+        ProjectNotes notes = 2;
+    }
+}
