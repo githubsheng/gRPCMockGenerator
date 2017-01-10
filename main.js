@@ -3,7 +3,7 @@
  * Created by wangsheng on 9/1/17.
  */
 const ds = require("./defaultServiceImpl");
-let loadedProto = ds.loadedProto;
+// let loadedProto = ds.loadedProto;
 // //provide your own implementation
 // function createPublicProject(call, callback){
 //     console.log(`using user defined implementation...`);
@@ -14,5 +14,5 @@ let loadedProto = ds.loadedProto;
 // }
 //
 // ds.addUserProtoService(loadedProto.itunes_appstore_project.ProjectService.service, {createPublicProject: createPublicProject});
-// ds.start('localhost:50051'); 
+ds.start('localhost:50051');
 //# sourceMappingURL=main.js.map
