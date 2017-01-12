@@ -1,0 +1,6 @@
+{
+  "name": "project name",
+  "autoStart": false,
+  "useDefaultImpl": false,
+  "port": "50001"
+}
