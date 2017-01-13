@@ -1,27 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="Main">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>
-        input {
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 18px;
-            width: 230px;
-        }
-    </style>
+    <link href="main.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../../bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="../dist/bundle.js"></script>
 </head>
-<body>
+<body ng-controller="mainController">
     <div id="header">
+        <button>new project</button> <!-- only ask for project name for now -->
         <button>start all</button>
         <button>stop all</button>
     </div>
     <div id="content">
-        <div id="projects"></div>
-        <div id="methods"></div>
-        <div id="editor"></div>
-        <div id="command-panel"></div>
+        <div id="projects">
+            <div class="project" ng-repeat="projectInfo in projectInfos" ng-click="selectProject(projectInfo)">
+                {{projectInfo.projectSetting.name}}
+            </div>
+        </div>
+        <div id="methods">
+            <div class="service" ng-repeat="serviceName in serviceNames">
+                <div class="service-name">{{serviceName}}</div>
+                <div class="method"
+                     ng-repeat="methodInfo in selectedProjectInfo.methodInfosGroupedByPath[serviceName]"
+                     ng-click="selectMethod(methodInfo)">
+                    {{methodInfo.methodName}}
+                </div>
+            </div>
+        </div>
+        <div id="command-panel">
+            <div id="project-mode" ng-show="commandPanelMode === 'project'">
+                <div>
+                    use default impl section <br>
+                    <button ng-click="useDefaultImpl()">use default implementation</button>
+                    <button ng-click="doNotUseDefaultImpl()">do not default implementation</button>
+                    <div>{{selectedProjectInfo.projectSetting.useDefaultImpl}}</div>
+                </div>
+
+                <div>
+                    import proto section <br>
+                    <input type="file" id="dropArea" webkitdirectory>
+                    <button ng-click="uploadProtos()">upload</button>
+                </div>
+
+                <div>
+                    control server section <br>
+                    <div>server status</div>
+                    <button ng-click="startServer()">start server</button>
+                    <button ng-click="stopServer()">stop server</button>
+                </div>
+            </div>
+            <div id="method-mode" ng-show="commandPanelMode === 'method'">
+                <div>
+                    define return section <br>
+                    <button ng-click="useUserDefinedReturn()">save custom</button>
+                    <button ng-click="useDefaultImplReturnForSelectedMethod()">use default</button>
+                </div>
+            </div>
+        </div>
+        <div id="editor" ng-show="commandPanelMode === 'method'">
+            <textarea id="user-defined-return">
+
+            </textarea>
+        </div>
     </div>
 </body>
 </html>

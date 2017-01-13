@@ -1,0 +1,23 @@
+/*input {*/
+    /*border: 2px solid #eee;*/
+    /*border-radius: 10px;*/
+    /*padding: 18px;*/
+    /*width: 230px;*/
+/*}*/
+
+
+.project {
+    background: pink;
+}
+
+.service {
+    background: lightyellow;
+}
+
+.method {
+    background: lightblue;
+}
+
+#command-panel {
+    background: mediumpurple;
+}

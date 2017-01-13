@@ -27,15 +27,20 @@ let root = {
                     let ret = userDefined ? userDefined() : defaultImpl();
                     callback(null, ret);
                 },
-                __userDefinedResult__createPublicProject: function(){
-                    let ret = null;
-                    ret = {
-                        msg: "hello"
-                    }
-                    return ret;
+                createPrivateProject: function(call, callback){
+                    let userDefined = root.hello.world.ProjectService.__userDefinedResult__createPrivateProject;
+                    let defaultImpl = root.hello.world.Response._create;
+                    let ret = userDefined ? userDefined() : defaultImpl();
+                    callback(null, ret);
                 }
             },
             TeamService : {
+                createPublicTeam: function(call, callback){
+                    let userDefined = root.hello.world.TeamService.__userDefinedResult__createPublicTeam;
+                    let defaultImpl = root.hello.world.Response._create;
+                    let ret = userDefined ? userDefined() : defaultImpl();
+                    callback(null, ret);
+                }
             }
         }
     }

@@ -4,7 +4,7 @@
 let gulp = require('gulp');
 let webpack = require('webpack-stream');
 
-gulp.task('packSourceCode', ['compileSourceCode'], function() {
+gulp.task('packSourceCode', function() {
     return gulp.src('client/js/main.js')
         .pipe(webpack({
             output: {

@@ -3,9 +3,9 @@
  */
 const fs = require('fs');
 const grpc = require('grpc');
-const protobuf = require("protobufjs");
 const pathModule = require('path');
 const _ = require('lodash');
+const protobuf = require("protobufjs");
 
 const resourceFolderPath = `./resources`;
 
@@ -428,6 +428,7 @@ interface projectSetting {
 
 interface ProjectInfos {
     builderNS: Namespace;
+    mockFilePath: string;
     projectFolderPath: string;
     methodInfosGroupedByPath: any;
     projectSetting: projectSetting;
@@ -435,26 +436,31 @@ interface ProjectInfos {
 
 export function initProject(projectFolderPath: string): ProjectInfos {
     const protoFilePaths: string[] = getProtoFilePaths(projectFolderPath);
-    let builderNS =  loadProtoBufBuilder(protoFilePaths);
+    console.log(protoFilePaths);
+    let builderNS = loadProtoBufBuilder(protoFilePaths);
 
-    let methodInfosGroupedByPath = groupMethodInfosByPath(builderNS, projectFolderPath);
     let projectSetting = require(`${projectFolderPath}/projectSetting`);
+
+    const mockFilePath = `${projectFolderPath}/generatedMock/generatedMock.js`;
+    generateCode(builderNS, mockFilePath, projectFolderPath, projectSetting.useDefaultImpl);
+
+    let methodInfosGroupedByPath = groupMethodInfosByPath(builderNS);
 
     return {
         builderNS: builderNS,
+        mockFilePath: mockFilePath,
         projectFolderPath: projectFolderPath,
         methodInfosGroupedByPath: methodInfosGroupedByPath,
         projectSetting: projectSetting
     };
 
-    function groupMethodInfosByPath(builderNS: Namespace, projectFolderPath: string){
+    function groupMethodInfosByPath(builderNS: Namespace){
 
         let methodInfosGroupedByPath = {};
 
-        helper(builderNS, null, projectFolderPath, methodInfosGroupedByPath);
+        helper(builderNS, null, methodInfosGroupedByPath);
 
-        function helper(node: ProtoASTNode, path: string, projectFolderPath: string,
-                        methodInfosGroupedByPath: any) {
+        function helper(node: ProtoASTNode, path: string, methodInfosGroupedByPath: any) {
 
             if(node.className === serviceMethodClassName) {
                 let method = <Method>node;
@@ -478,30 +484,21 @@ export function initProject(projectFolderPath: string): ProjectInfos {
 
             if(node.className === namespaceClassName || node.className === serviceClassName) {
                 path = path ? `${path}.${node.name}` : node.name;
-                node.children.forEach(n => helper(n, path, projectFolderPath, methodInfosGroupedByPath));
+                node.children.forEach(n => helper(n, path, methodInfosGroupedByPath));
             }
 
         }
+
+        return methodInfosGroupedByPath;
     }
-
-
 }
 
 
 export function start(projectInfos: ProjectInfos) {
-    let loadedProtoBufBuilderNS = projectInfos.builderNS;
-
     let server = new grpc.Server();
-    let loadedProto = loadGrpcProtos(loadedProtoBufBuilderNS);
-
-    const mockFilePath = `${projectInfos.projectFolderPath}/generatedMock/generatedMock.js`;
-    generateCode(loadedProtoBufBuilderNS, mockFilePath, projectInfos.projectFolderPath, projectInfos.projectSetting.useDefaultImpl);
-
-    let mockImpl = require(mockFilePath);
-    let useDefault = projectInfos.projectSetting.useDefaultImpl;
-
-    addProtoServiceToServer(server, loadedProtoBufBuilderNS, loadedProto, mockImpl);
-    return mockImpl;
+    let mockImpl = require(projectInfos.mockFilePath);
+    let loadedProto = loadGrpcProtos(projectInfos.builderNS);
+    addProtoServiceToServer(server, projectInfos.builderNS, loadedProto, mockImpl);
 
     // server.bind(`localhost:${projectInfos.projectSetting.port}`, grpc.ServerCredentials.createInsecure());
     // server.start();
